@@ -69,7 +69,6 @@ public class Knapsack {
         double twoToTheN = Math.pow(2.0, (double)n);
         int numSubSets = (int)twoToTheN - 1;
         int binaryRep[];
-        int maxBenefit = 0;
         ArrayList maxSets = new ArrayList<maxBenefitSet>();
 
         System.out.println("Brute Force Solutions");
@@ -78,6 +77,7 @@ public class Knapsack {
             ArrayList packedItems = new ArrayList<Integer>();
             int setWeight = 0;
             int setBenefit = 0;
+            int maxBenefit = 0;
             binaryRep = generateSubset(i,numSubSets);
 
             for(int j = 0; j < n; i++){
@@ -114,7 +114,7 @@ public class Knapsack {
 
         //print all maxSets
         for (int i = 0; i < maxSets.size(); i++){
-            System.out.print("Optimal Set = { ");
+            System.out.print("\nOptimal Set = { ");
             maxBenefitSet currSet = (maxBenefitSet) maxSets.get(i);
             for(int j = 0; j < currSet.setIndices.size(); j++){
                 System.out.print(currSet.setIndices.get(j) + ",");
@@ -158,6 +158,12 @@ public class Knapsack {
         }
 
         //print out the list of packed items
+        System.out.println("Greedy Approximate Solution");
+        System.out.print("Optimal set = { ");
+        for(int i = 0; i < packedItems.size(); i++){
+            System.out.print(packedItems.get(i) + ",");
+        }
+        System.out.print("} weight sum = " + weight + " benefit sum = " + benefit);
 
 
     }
