@@ -15,7 +15,7 @@ public class Knapsack {
 
 
     //since the weight/benefit ratios have to be sorted we need a class to keep track of the original index
-    public class wbRatio implements Comparator<wbRatio> {
+    public class wbRatio implements Comparable<wbRatio> {
         int index;
         int weight;
         int benefit;
@@ -25,14 +25,15 @@ public class Knapsack {
             this.index = index;
             this.weight = weight;
             this.benefit = benefit;
-            ratio = ((double)weight)/benefit;
+            ratio = ((double)benefit)/weight;
         }
 
+
         @Override
-        public int compare(wbRatio o1, wbRatio o2) {
-            if (o1.ratio < o2.ratio) return -1;
-            if (o1.ratio > o2.ratio) return 1;
-            return 0;
+        public int compareTo(wbRatio o) {
+            if(this.ratio < o.ratio) return -1;
+            else if(o.ratio < this.ratio) return 1;
+            else return 0;
         }
     }
 
@@ -143,12 +144,15 @@ public class Knapsack {
         }
 
         //sort weight/benefit ratio array in descending order
-        Arrays.sort(weightBenefitRatio, Collections.reverseOrder());
+        Arrays.sort(weightBenefitRatio, 1, n, Collections.reverseOrder());
+        for(int i=1; i < weightBenefitRatio.length; i++){
+            System.out.print(weightBenefitRatio[i].ratio + " , ");
+        }
 
         //do the greedy choice
         //storing items we select
         List packedItems = new ArrayList<wbRatio>();
-        for(int i = 0; weight <= W && i < n; i++){
+        for(int i = 1; weight <= W && i < n; i++){
             int availableSpace = W - weight;
             if(weightBenefitRatio[i].weight <= availableSpace){
                 packedItems.add(weightBenefitRatio[i]);
@@ -161,7 +165,8 @@ public class Knapsack {
         System.out.println("Greedy Approximate Solution");
         System.out.print("Optimal set = { ");
         for(int i = 0; i < packedItems.size(); i++){
-            System.out.print(packedItems.get(i) + ",");
+            wbRatio currItem = (wbRatio) packedItems.get(i);
+            System.out.print(currItem.index + ",");
         }
         System.out.print("} weight sum = " + weight + " benefit sum = " + benefit);
 
