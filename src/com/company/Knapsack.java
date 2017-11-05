@@ -63,6 +63,7 @@ public class Knapsack {
 
     public int[] generateSubset(int k, int n){
         int[] binaryRep = new int[n];
+        String binaryString = Integer.toBinaryString(k);
         return binaryRep;
     }
 
@@ -120,13 +121,55 @@ public class Knapsack {
             for(int j = 0; j < currSet.setIndices.size(); j++){
                 System.out.print(currSet.setIndices.get(j) + ",");
             }
-            System.out.print("weight sum = " + currSet.setWeight + " benefit sum = " + currSet.setBenefit);
+            System.out.print("\b }weight sum = " + currSet.setWeight + " benefit sum = " + currSet.setBenefit +"\n");
         }
 
     }
 
+
     public void DynamicProgrammingSolution(boolean printBmatrix){
-        int B[][] = new int[W][n];
+        int B[][] = new int[n][W];
+        ArrayList<Integer> choosen = new ArrayList<>();
+
+        for(int w = 0; w < W; w++){
+            B[0][w] = 0;
+        }
+
+        for(int k = 1; k < n; k++){
+            for(int w = 0; w < W; w++){
+                if (w < weights[k]){
+                    B[k][w] = B[k-1][w];
+                }else{
+                    B[k][w] = Math.max(B[k-1][w], B[k-1][w - weights[k]] + benefits[k]);
+                }
+            }
+        }
+
+        //print matrix
+        if(printBmatrix == true){
+
+            for(int i=0; i <n; i++){
+                for(int j = 0; j <W; j++){
+                    System.out.print(B[i][j] + ",");
+                }
+                System.out.println();
+            }
+        }
+
+        //find solution set
+        benefit = B[n-1][W-1];
+
+        //Print solution
+        System.out.println("\nDynamic Programming Solution");
+        System.out.print("Optimal Set = { ");
+        for(int i = 0; i < choosen.size(); i++){
+            System.out.print(choosen.get(i) + ",");
+        }
+        System.out.print("\b } weight sum = " + weight + " benefit sum = " + benefit + "\n");
+
+
+
+
 
 
     }
@@ -145,9 +188,6 @@ public class Knapsack {
 
         //sort weight/benefit ratio array in descending order
         Arrays.sort(weightBenefitRatio, 1, n, Collections.reverseOrder());
-        for(int i=1; i < weightBenefitRatio.length; i++){
-            System.out.print(weightBenefitRatio[i].ratio + " , ");
-        }
 
         //do the greedy choice
         //storing items we select
@@ -168,10 +208,11 @@ public class Knapsack {
             wbRatio currItem = (wbRatio) packedItems.get(i);
             System.out.print(currItem.index + ",");
         }
-        System.out.print("} weight sum = " + weight + " benefit sum = " + benefit);
+        System.out.print("\b } weight sum = " + weight + " benefit sum = " + benefit +"\n");
 
 
     }
+
 
 
 }
