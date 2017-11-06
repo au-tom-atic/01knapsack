@@ -4,24 +4,22 @@ import java.util.*;
 
 public class Knapsack {
 
-    int W;
-    int weights[];
-    int benefits[];
-    int n;
-
-    int[][] B;
-    int benefit = 0;
-    int weight = 0;
+    int W;//knapsack weight
+    int weights[];//list of weights
+    int benefits[];//list of benefits
+    int n;//number of items
+    int benefit = 0;//benefit sum
+    int weight = 0;//weight sum
 
 
     //since the weight/benefit ratios have to be sorted we need a class to keep track of the original index
-    public class wbRatio implements Comparable<wbRatio> {
+    private class wbRatio implements Comparable<wbRatio> {
         int index;
         int weight;
         int benefit;
         double ratio;
 
-        public wbRatio(int index, int weight, int benefit){
+        private wbRatio(int index, int weight, int benefit){
             this.index = index;
             this.weight = weight;
             this.benefit = benefit;
@@ -37,15 +35,15 @@ public class Knapsack {
         }
     }
 
-    public class maxBenefitSet{
+    private class maxBenefitSet{
         int setWeight;
         int setBenefit;
-        ArrayList<Integer> setIndices;
+        ArrayList<Integer> indices;
 
         public maxBenefitSet(int weight, int benefit, ArrayList<Integer> indices){
             this.setWeight = weight;
             this.setBenefit = benefit;
-            this.setIndices = indices;
+            this.indices = indices;
         }
     }
 
@@ -55,88 +53,95 @@ public class Knapsack {
             this.W = W;
             this.weights = weights;
             this.benefits = benefits;
-            this.n = weights.length;
+            this.n = weights.length - 1;
         }else{
             System.out.println("Bad input");
         }
     }
 
+
+
     public int[] generateSubset(int k, int n){
-        int[] binaryRep = new int[n];
-        String binaryString = Integer.toBinaryString(k);
-        return binaryRep;
+        //initialize the bit array
+        int binary[] = new int[n];
+        for(int i: binary){
+            binary[i] = 0;
+        }
+
+        int index = binary.length - 1;
+        while(k > 0 ){
+            binary[index--] = k%2;
+            k = k/2;
+        }
+        return binary;
     }
 
     public void BruteForceSolution(){
-        double twoToTheN = Math.pow(2.0, (double)n);
-        int numSubSets = (int)twoToTheN - 1;
-        int binaryRep[];
+        int binary[];
+        int maxBenefit = 0;
+        int numSets = (int)Math.pow(2, n);
         ArrayList maxSets = new ArrayList<maxBenefitSet>();
 
+        System.out.println(n);
         System.out.println("Brute Force Solutions");
         //for loop checking each of the possible sets
-        for(int i = 1; i < numSubSets; i++){
+        for(int i = 0; i < numSets; i++) {
             ArrayList packedItems = new ArrayList<Integer>();
             int setWeight = 0;
             int setBenefit = 0;
-            int maxBenefit = 0;
-            binaryRep = generateSubset(i,numSubSets);
+            binary = generateSubset(i, n);
 
-            for(int j = 0; j < n; i++){
-                if(binaryRep[j] == 1){
-                    //add to item to knapsack
+            for(int j = 0; j < binary.length ; j++){
+                if(binary[j] == 1){
                     packedItems.add(j);
-                    setWeight += weights[j];
                     setBenefit += benefits[j];
-                }else if(binaryRep[i] == 0){
-                    //skip
-                }else{
-                    //these should only be 1s and 0s you messed up
+                    setWeight += weights[j];
                 }
             }
 
-            //check if set is feasible
-            if(setWeight <= W){
-                //check if benefit is greater. clear current maxSets. add to maxSets
-                if(setBenefit > maxBenefit){
+            if(setWeight <= W) {
+                //check the set
+                if (setBenefit > maxBenefit) {
                     maxBenefit = setBenefit;
-                    maxBenefitSet newSet = new maxBenefitSet(setWeight, setBenefit, packedItems);
                     maxSets.clear();
-                    maxSets.add(newSet);
-                }else if(setBenefit == maxBenefit){//if benefit is equal add to list
-                    maxBenefitSet newSet = new maxBenefitSet(setWeight, setBenefit, packedItems);
-                    maxSets.add(newSet);
-                }else{
-                    //not enough benefit
+                    maxSets.add(new maxBenefitSet(setWeight, setBenefit, packedItems));
+                } else if (setBenefit == maxBenefit) {
+                    maxSets.add(new maxBenefitSet(setWeight, setBenefit, packedItems));
+                } else {
+                    //move on
                 }
-            }else{
-                //weight was too much
             }
+
         }
 
-        //print all maxSets
-        for (int i = 0; i < maxSets.size(); i++){
-            System.out.print("\nOptimal Set = { ");
+        //checked every subset. max benefits are in maxSets
+        for(int i = 0; i < maxSets.size(); i++){
             maxBenefitSet currSet = (maxBenefitSet) maxSets.get(i);
-            for(int j = 0; j < currSet.setIndices.size(); j++){
-                System.out.print(currSet.setIndices.get(j) + ",");
+            System.out.print("Optimal Set = { ");
+            for(int j = 0; j < currSet.indices.size(); j++){
+                System.out.print(currSet.indices.get(j) + ",");
             }
-            System.out.print("\b }weight sum = " + currSet.setWeight + " benefit sum = " + currSet.setBenefit +"\n");
+            System.out.print("\b } Weight sum = " + currSet.setWeight + " benefit sum = " + currSet.setBenefit + "\n");
         }
+
+
 
     }
 
 
     public void DynamicProgrammingSolution(boolean printBmatrix){
-        int B[][] = new int[n][W];
-        ArrayList<Integer> choosen = new ArrayList<>();
+        System.out.println("W: " + W);
+        System.out.println("n: " + n);
 
-        for(int w = 0; w < W; w++){
+        int B[][] = new int[n+1][W+1];
+        int[] selected = new int[n];
+
+        for(int w = 0; w < W + 1; w++){
             B[0][w] = 0;
         }
 
-        for(int k = 1; k < n; k++){
-            for(int w = 0; w < W; w++){
+        for(int k = 1; k <= n; k++){
+            for(int w = 0; w <= W; w++){
                 if (w < weights[k]){
                     B[k][w] = B[k-1][w];
                 }else{
@@ -145,31 +150,36 @@ public class Knapsack {
             }
         }
 
+
+
+        //find solution set
+        benefit = B[n][W];
+        //while()
+
+        //Print solution
+        System.out.println("\nDynamic Programming Solution");
+        for(int i = 0; i <= 10; i++)
+            System.out.format("%5d", i);
         //print matrix
         if(printBmatrix == true){
-
-            for(int i=0; i <n; i++){
-                for(int j = 0; j <W; j++){
-                    System.out.print(B[i][j] + ",");
+            System.out.println();
+            for(int i=0; i <= n; i++){
+                for(int j = 0; j <= W; j++){
+                    System.out.format("%5d", B[i][j]);
                 }
                 System.out.println();
             }
         }
 
-        //find solution set
-        benefit = B[n-1][W-1];
-
-        //Print solution
-        System.out.println("\nDynamic Programming Solution");
         System.out.print("Optimal Set = { ");
-        for(int i = 0; i < choosen.size(); i++){
-            System.out.print(choosen.get(i) + ",");
+        for(int i = 0; i < selected.length; i++){
+            if(selected[i] == 1){
+                System.out.print(selected[i] + ",");
+                weight += weights[i];
+                benefit += benefits[i];
+            }
         }
         System.out.print("\b } weight sum = " + weight + " benefit sum = " + benefit + "\n");
-
-
-
-
 
 
     }
