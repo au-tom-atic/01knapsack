@@ -148,8 +148,8 @@ public class Knapsack {
 
         //find solution set
         benefit = B[n][W];
-
-        //while()
+        weight = 0;//placeholder
+        
 
         //Print solution
         System.out.println("\nDynamic Programming Solution");
