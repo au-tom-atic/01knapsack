@@ -82,7 +82,6 @@ public class Knapsack {
         int numSets = (int)Math.pow(2, n);
         ArrayList maxSets = new ArrayList<maxBenefitSet>();
 
-        System.out.println(n);
         System.out.println("Brute Force Solutions");
         //for loop checking each of the possible sets
         for(int i = 0; i < numSets; i++) {
@@ -91,11 +90,11 @@ public class Knapsack {
             int setBenefit = 0;
             binary = generateSubset(i, n);
 
-            for(int j = 0; j < binary.length ; j++){
+            for(int j = 0; j < binary.length; j++){
                 if(binary[j] == 1){
-                    packedItems.add(j);
-                    setBenefit += benefits[j];
-                    setWeight += weights[j];
+                    packedItems.add(j + 1);
+                    setBenefit += benefits[j + 1];
+                    setWeight += weights[j + 1];
                 }
             }
 
@@ -124,14 +123,10 @@ public class Knapsack {
             System.out.print("\b } Weight sum = " + currSet.setWeight + " benefit sum = " + currSet.setBenefit + "\n");
         }
 
-
-
     }
 
 
     public void DynamicProgrammingSolution(boolean printBmatrix){
-        System.out.println("W: " + W);
-        System.out.println("n: " + n);
 
         int B[][] = new int[n+1][W+1];
         int[] selected = new int[n];
@@ -151,15 +146,13 @@ public class Knapsack {
         }
 
 
-
         //find solution set
         benefit = B[n][W];
+
         //while()
 
         //Print solution
         System.out.println("\nDynamic Programming Solution");
-        for(int i = 0; i <= 10; i++)
-            System.out.format("%5d", i);
         //print matrix
         if(printBmatrix == true){
             System.out.println();
@@ -222,7 +215,5 @@ public class Knapsack {
 
 
     }
-
-
-
+    
 }
