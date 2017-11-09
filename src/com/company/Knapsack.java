@@ -129,7 +129,7 @@ public class Knapsack {
     public void DynamicProgrammingSolution(boolean printBmatrix){
 
         int B[][] = new int[n+1][W+1];
-        int[] selected = new int[n];
+        int[] selected = new int[n + 1];
 
         for(int w = 0; w < W + 1; w++){
             B[0][w] = 0;
@@ -146,10 +146,27 @@ public class Knapsack {
         }
 
 
-        //find solution set
-        benefit = B[n][W];
-        weight = 0;//placeholder
-        
+        //finding items
+
+        //set up selected[]
+        selected[0] = -1;
+        for(int t = 1; t <= n; t++){
+            selected[t] = 0;
+        }
+
+        //mark the items
+        int w = W;
+        int it = n;
+        while(w > 0 && it > 0){
+            if(B[it][w] != B[it-1][w]){
+                selected[it] = 1;
+                w = w - weights[it];
+                it = it - 1;
+            }else{
+                it = it - 1;
+            }
+        }
+
 
         //Print solution
         System.out.println("\nDynamic Programming Solution");
@@ -162,19 +179,22 @@ public class Knapsack {
                 }
                 System.out.println();
             }
+            System.out.println("\n");
+        }else{
+            System.out.println("Dynamic Matrix Not Requested");
         }
 
+        weight = 0;
+        benefit = 0;
         System.out.print("Optimal Set = { ");
-        for(int i = 0; i < selected.length; i++){
+        for(int i = 1; i < selected.length; i++){
             if(selected[i] == 1){
-                System.out.print(selected[i] + ",");
+                System.out.print(i + ",");
                 weight += weights[i];
                 benefit += benefits[i];
             }
         }
         System.out.print("\b } weight sum = " + weight + " benefit sum = " + benefit + "\n");
-
-
     }
 
     public void GreedyApproximateSolution(){
@@ -204,9 +224,10 @@ public class Knapsack {
             }
         }
 
+
         //print out the list of packed items
         System.out.println("Greedy Approximate Solution");
-        System.out.print("Optimal set = { ");
+        System.out.print("Greedy set = { ");
         for(int i = 0; i < packedItems.size(); i++){
             wbRatio currItem = (wbRatio) packedItems.get(i);
             System.out.print(currItem.index + ",");
