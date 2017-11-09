@@ -82,7 +82,7 @@ public class Knapsack {
         int numSets = (int)Math.pow(2, n);
         ArrayList maxSets = new ArrayList<maxBenefitSet>();
 
-        System.out.println("Brute Force Solutions");
+        System.out.println("Brute Force Solutions:");
         //for loop checking each of the possible sets
         for(int i = 0; i < numSets; i++) {
             ArrayList packedItems = new ArrayList<Integer>();
@@ -122,6 +122,7 @@ public class Knapsack {
             }
             System.out.print("\b } Weight sum = " + currSet.setWeight + " benefit sum = " + currSet.setBenefit + "\n");
         }
+        System.out.println();
 
     }
 
@@ -169,7 +170,7 @@ public class Knapsack {
 
 
         //Print solution
-        System.out.println("\nDynamic Programming Solution");
+        System.out.println("\nDynamic Programming Solution:");
         //print matrix
         if(printBmatrix == true){
             System.out.println();
@@ -226,7 +227,7 @@ public class Knapsack {
 
 
         //print out the list of packed items
-        System.out.println("Greedy Approximate Solution");
+        System.out.println("Greedy Approximate Solution:");
         System.out.print("Greedy set = { ");
         for(int i = 0; i < packedItems.size(); i++){
             wbRatio currItem = (wbRatio) packedItems.get(i);
